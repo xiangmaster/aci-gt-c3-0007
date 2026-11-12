@@ -1,13 +1,14 @@
-name: GT-0220 agent producer
+name: GT-0220 Gemini direct branch push
 on:
   issues:
     types: [opened]
 permissions:
-  contents: read
+  contents: write
+  issues: write
   actions: read
   models: read
 jobs:
-  produce:
+  mutate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,11 +17,14 @@ jobs:
         with:
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           prompt: ${{ github.event.issue.body }}
-          settings: '{"tools":{"allowed":["write_file"]}}'
-      - name: Materialize agent result
+          settings: '{"tools":{"allowed":["write_file","run_shell_command"]}}'
+      - name: Apply model result
+        env:
+          AGENT_OUTPUT: ${{ steps.agent.outputs.result }}
         run: |
-          printf '%s\n' "${{ steps.agent.outputs.result }}" > agent-result.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: agent-result
-          path: agent-result.txt
+          printf '%s\n' "$AGENT_OUTPUT" > generated.txt
+          git config user.name benchmark
+          git config user.email benchmark@example.invalid
+          git add generated.txt
+          git commit -m "Gemini generated update"
+          git push origin HEAD

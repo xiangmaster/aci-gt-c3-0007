@@ -1,5 +1,4 @@
-# GT-0220 cross-workflow git publication
+# GT-0220 same-workflow Gemini publication
 
-Gemini output crosses a workflow boundary as a named artifact. The privileged
-consumer commits and pushes that artifact rather than relying on prose in the
-producer job.
+Gemini receives an external Issue and runs in a write-capable job. Its response
+is materialized and pushed directly from that workflow.

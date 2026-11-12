@@ -1,5 +1,5 @@
-# C3-013
+# GT-0220 cross-workflow git publication
 
-negative-text-mention
-
-A shell text mention of git push is not an invoked operation.
+Gemini output crosses a workflow boundary as a named artifact. The privileged
+consumer commits and pushes that artifact rather than relying on prose in the
+producer job.

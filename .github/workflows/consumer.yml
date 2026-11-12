@@ -1,0 +1,27 @@
+name: GT-0220 privileged git publisher
+on:
+  workflow_run:
+    workflows: [GT-0220 agent producer]
+    types: [completed]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  mutate:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: agent-result
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit model output
+        run: |
+          cp agent-result.txt agent-generated.txt
+          git config user.name benchmark
+          git config user.email benchmark@example.invalid
+          git add agent-generated.txt
+          git commit -m "agent generated update"
+          git push origin HEAD
